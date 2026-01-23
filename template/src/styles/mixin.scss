@@ -1,0 +1,74 @@
+// 省略多行
+@mixin ellipsis-mixin($line: 1) {
+  display: -webkit-box;
+  /* Chrome 4+, Safari 3.1, iOS Safari 3.2+ */
+  display: -moz-box;
+  /* Chrome 29+, Firefox 22+, IE 11+, Opera 12.1/17/18, Android 4.4+ */
+  box-orient: vertical;
+  -webkit-box-orient: vertical;
+  line-clamp: $line;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+// 蓝绿色
+@mixin turquoise-mixin($border: false) {
+  background: #E7F4F6;
+  border: 1px solid;
+  color: #1094A3;
+  @if $border {
+    border-color: #91CED5;
+  } @else {
+    border-color: transparent;
+  }
+}
+
+// 紫色
+@mixin purple-mixin($border: false) {
+  background: #F1E9F8;
+  border: 1px solid;
+  color: #6F25B8;
+  @if $border {
+    border-color: #BD9ADE;
+  } @else {
+    border-color: transparent;
+  }
+}
+
+// 午夜蓝
+@mixin midnightblue-mixin($border: false) {
+  background: #EBEBF5;
+  border: 1px solid;
+  color: #373799;
+  @if $border {
+    border-color: #A3A3D0;
+  } @else {
+    border-color: transparent;
+  }
+}
+
+// 洋红
+@mixin magenta-mixin($border: false) {
+  background: #FAE8F2;
+  border: 1px solid;
+  color: #CC1878;
+  @if $border {
+    border-color: #E895C1;
+  } @else {
+    border-color: transparent;
+  }
+}
+
+// 金色
+@mixin golden-mixin($border: false) {
+  background: #FFF8DD;
+  border: 1px solid;
+  color: #AC7B1C;
+  @if $border {
+    border-color: #F5DC9A;
+  } @else {
+    border-color: transparent;
+  }
+}

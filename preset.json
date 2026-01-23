@@ -1,0 +1,10 @@
+{
+  "useConfigFiles": true,
+  "cssPreprocessor": "scss",
+  "plugins": {},
+  "vueVersion": "3",
+  "router": false,
+  "pinia": false,
+  "skipGetStarted": true,
+  "noPlugins": true
+}

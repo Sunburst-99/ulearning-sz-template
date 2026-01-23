@@ -1,0 +1,62 @@
+.markdown {
+  h1,
+  h2,
+  h3,
+  h4,
+  pre,
+  p {
+    margin: 10px 0;
+  }
+  ol {
+    padding: 0 20px;
+  }
+  h1 {
+    font-size: 1.3em;
+  }
+  h2 {
+    font-size: 1.2em;
+  }
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  /* 滑块样式 */
+  ::-webkit-scrollbar-thumb {
+    background-color: #e6e8eb;
+  }
+}
+
+.markdown-content {
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 10px 0;
+    white-space: pre-wrap;
+  }
+  .hljs {
+    padding: 10px;
+    border-radius: 4px;
+  }
+  h2 {
+    padding-bottom: 3px;
+    font-size: 18px;
+    border-bottom: 1px solid #eaecef;
+  }
+  img {
+    max-width: 100%;
+  }
+  .MathJax svg {
+    max-width: 100%;
+    g[data-mml-node="merror"] {
+      rect[data-background="true"] {
+        fill: transparent !important;
+      }
+      g[data-mml-node="mtext"] {
+        fill: var(--el-text-color-primary) !important;
+      }
+    }
+  }
+}

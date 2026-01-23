@@ -1,0 +1,101 @@
+// 标题
+.header {
+  color: var(--el-text-color-primary);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+// form
+.el-form {
+  .el-form-item {
+    margin-bottom: 20px;
+    :deep(.el-input){
+      .el-input__wrapper {
+        background-color: #f0f2f5;
+        box-shadow: none;
+        padding: 0 16px;
+        border-radius: 4px;
+        &:hover {
+          background-color: #e6e8eb !important;
+        }
+      }
+      .el-input__wrapper.is-focus{
+        background-color: #f0f2f5 !important;
+        box-shadow: 0 0 0 1px var(--el-color-primary) inset;
+      }
+      .el-input__inner {
+        height: 44px;
+      }
+    }
+  }
+  :deep(.el-form-item.is-error) .el-input__wrapper{
+    box-shadow: 0 0 0 1px var(--el-color-danger) inset !important;
+  }
+}
+
+// 输入手机号input
+.phoneInput {
+  border-color: #f0f2f5;
+  .el-input {
+    .el-input__prefix-inner {
+      justify-content: flex-start;
+      width: 44px;
+    }
+    .prefix {
+      font-weight: 400;
+      color: #333333;
+      position: relative;
+      margin-right: 20px;
+      &::after {
+        content: " ";
+        position: absolute;
+        right: -10px;
+        top: calc(50%);
+        transform: translateY(-50%);
+        width: 1px;
+        height: 12px;
+        background-color: #bbbbbb;
+      }
+    }
+  }
+  .areaCode {
+    width: 60px;
+    &::after {
+      content: " ";
+      color: #bbbbbb;
+      width: 3px;
+      height: 20px;
+    }
+  }
+}
+
+// 验证码输入框
+.captchaGroup {
+  :deep(.el-form-item__content) {
+    display: flex;
+    justify-content: space-between;
+    .el-input{
+      flex: 1;
+    }
+    .el-button {
+      margin-left: 15px;
+      border-color: #f0f2f5;
+      background-color: #f0f2f5;
+      padding: 12px 15px;
+      width: 100px;
+      height: 100%;
+    }
+    .countdown {
+      color: #999999;
+      width: 120px;
+    }
+  }
+}
+
+// 解决登录框自动填充账号密码背景色
+:deep(.el-input__inner:-webkit-autofill) {
+  background-color: transparent;
+  transition: background-color 5000s ease-in-out 0s;
+}

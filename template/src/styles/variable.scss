@@ -1,0 +1,123 @@
+@import url('./element-variables.scss');
+@import url('./element-dark.scss');
+
+:root {
+  @extend .ai-root-variables;
+  .el-tooltip__trigger {
+    outline: none;
+  }
+}
+
+// AI助手相关的全局变量
+.ai-root-variables {
+  --color-ai-1: rgba(254, 182, 74, 0.10);
+  --color-ai-2: rgba(230, 0, 18, 0.10);
+
+  --color-ai-3: rgba(254, 182, 74, 0.3);
+  --color-ai-4: rgba(254, 98, 74, 0.3);
+  --color-ai-5: rgba(230, 0, 18, 0.3);
+
+  --color-ai-6: rgba(108, 83, 251, 0.10);
+
+  --color-ai-7: #FEB64A;
+  --color-ai-8: #E60012;
+
+  --color-ai-9: #FEB64A;
+  --color-ai-10: #FE624A;
+  --color-ai-11: #E60012;
+
+  --color-ai-9-1: #FEBA5C;
+  --color-ai-10-1: #FE7E5C;
+  --color-ai-11-1: #E81B2B;
+
+  --color-ai-9-2: #E59E43;
+  --color-ai-10-2: #E56343;
+  --color-ai-11-2: #D00412;
+
+  --color-ai-9-3: rgba(254, 182, 74, 0.5);
+  --color-ai-10-3: rgba(254, 98, 74, 0.5);
+  --color-ai-11-3: rgba(230, 0, 18, 0.5);
+
+  --color-ai-12: rgba(254, 182, 74, 0.03);
+  --color-ai-13: rgba(254, 98, 74, 0.03);
+  --color-ai-14: rgba(230, 0, 18, 0.03);
+
+  --color-ai-15: #FEB64A;
+  --color-ai-16: rgba(254, 182, 74, 0.05);
+  --color-ai-17: rgba(230, 0, 18, 0.05);
+
+  --color-ai-18: #FAF4EF;
+  --color-ai-19: #fff;
+  --color-ai-20: #FFEEEC;
+}
+
+/********** 不同风格对应的变量 ********/
+.dark-header {
+  background: var(--el-menu-bg-color-dark);
+  color: #FFF;
+  border: none;
+  .logo {
+    filter: brightness(0) invert(1);
+  }
+  .user {
+    color: #FFF
+  }
+}
+.dark-aside {
+  background: var(--el-menu-bg-color-dark);
+  .expand {
+    border-color: #344054;
+    svg {
+      color: #B5BECD;
+    }
+  }
+}
+.default-layout {
+  .admin-header {
+    @extend .dark-header;
+    background: var(--el-color-primary-opacity-8);
+  }
+  .admin-aside {
+    background: #FFF;
+    border: none;
+  }
+}
+
+.dark-layout {
+  .admin-header {
+    @extend .dark-header;
+  }
+  .admin-aside {
+    @extend .dark-aside;
+  }
+}
+
+.light-layout {
+  .admin-header {
+    background: #FFF;
+    border-color: var(--el-border-color-lighter);
+  }
+  .admin-aside {
+    background: #FFF;
+    border: none;
+  }
+}
+
+.blue-layout {
+  .layout-container {
+    background: radial-gradient(100% 100% at 50% 0%, #E4F6FF 0%, #F8F7FF 50%, #EDF3FC 100%);
+  }
+}
+
+.red-layout {
+  .layout-container {
+    background: radial-gradient(100% 100% at 50% 0%, #FFF1F1 0%, #FFF 50%, #FFFBF4 100%);
+  }
+}
+
+/************ 页面布局 **************/
+.my-common-layout {
+  width: calc(100% - 30px);
+  max-width: 1200px;
+  margin: 0 auto;
+}

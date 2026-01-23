@@ -1,0 +1,25 @@
+{
+  "name": "ulearning-sz-template",
+  "version": "1.0.1",
+  "description": "思政自定义Vue3+TS+Vite脚手架预设",
+  "main": "preset.json",
+  "keywords": [
+    "vue-preset",
+    "vue-cli",
+    "vue3",
+    "ts",
+    "ulearning-sz-template"
+  ],
+  "license": "MIT",
+  "files": [
+    "preset.json",
+    "template/",
+    "generator.js"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

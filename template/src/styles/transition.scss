@@ -1,0 +1,79 @@
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter-from {  
+  opacity: 0;
+  transform: translateX(-30px);
+}
+.fade-transform-enter-to { 
+  opacity: 1;
+  transform: translateX(0px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* scale-transform */
+.scale-transform-leave-active,
+.scale-transform-enter-active {
+  transition: all 0.3s;
+}
+
+/* 可能为enter失效，拆分为 enter-from和enter-to */
+.scale-transform-enter-from {  
+  opacity: 0;
+  transform: scale(0);
+}
+.scale-transform-enter-to { 
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scale-transform-leave-to {
+  opacity: 0;
+}
+
+/* scalex-transform */
+.scalex-transform-leave-active,
+.scalex-transform-enter-active {
+  transition: all 0.3s;
+}
+
+.scalex-transform-enter-from {  
+  opacity: 0;
+  transform: scalex(0);
+}
+.scalex-transform-enter-to { 
+  opacity: 1;
+  transform: scalex(1);
+}
+
+.scalex-transform-leave-to {
+  opacity: 0;
+  // transform: scalex(0);
+}
+
+/* move-transform */
+.move-transform-leave-active,
+.move-transform-enter-active {
+  transition: all .3s;
+}
+
+.move-transform-enter-from {  
+  opacity: 0;
+  transform: translateX(100%);
+}
+.move-transform-enter-to { 
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.move-transform-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
