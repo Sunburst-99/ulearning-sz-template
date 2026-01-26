@@ -1,7 +1,10 @@
 <script setup lang="ts">
+  import { useRouter } from 'vue-router';
   import { apiLogout } from '@/api/login';
   import { User } from '@element-plus/icons-vue'
   import { useUserStore, useAppStore } from '@/store'
+
+  const Router = useRouter()
 
   interface Props {
     height: string
@@ -12,7 +15,11 @@
   const AppStore = useAppStore()
 
   const login = () => {
-    AppStore.loginDialog = true
+    if (import.meta.env.VITE_IS_PORTAL) {
+      AppStore.loginDialog = true
+    } else {
+      Router.push('/login')
+    }
   }
 
   // 头像下拉
