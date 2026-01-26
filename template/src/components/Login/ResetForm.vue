@@ -14,6 +14,12 @@ interface ResetForm {
   captcha: string
 }
 
+interface Emit {
+  (e: 'openDialog'): void
+  (e: 'closeDialog'): void
+}
+const emit = defineEmits<Emit>()
+
 const resetFormRef = ref<FormInstance | null>(null)
 
 let countdownId: NodeJS.Timeout | undefined = undefined
@@ -31,8 +37,6 @@ const props = defineProps({
     default: () => {}
   }
 })
-
-const emit = defineEmits(['openDialog', 'closeDialog'])
 
 const resetForm = reactive<ResetForm>({
   phone: "",

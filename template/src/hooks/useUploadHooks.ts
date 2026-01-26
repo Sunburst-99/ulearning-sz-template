@@ -52,7 +52,7 @@ export default function() {
       }
     }).then(res => {
       if (res.data.code === 1) {
-        successCb && successCb(res.data.result[0].filePath);
+        successCb && successCb(res.data.result.filePath);
       } else {
         failCb && failCb(res.data);
       }

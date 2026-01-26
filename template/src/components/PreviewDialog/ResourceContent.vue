@@ -162,10 +162,6 @@
       const mouseX = e.clientX - rect.getBoundingClientRect().left;
       const mouseY = e.clientY - rect.getBoundingClientRect().top;
       
-      // 计算缩放前的中心点位置
-      const centerX = rectWidth / 2 - x.value;
-      const centerY = rectHeight / 2 - y.value;
-      
       // 计算鼠标相对于图片中心点的偏移
       const mouseOffsetX = mouseX - rectWidth / 2;
       const mouseOffsetY = mouseY - rectHeight / 2;

@@ -23,6 +23,7 @@ declare module 'vue' {
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     EllipsisTooltip: typeof import('./src/components/EllipsisTooltip/index.vue')['default']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Empty: typeof import('./src/components/Empty.vue')['default']
     FileList: typeof import('./src/components/MyUpload/FileList.vue')['default']
     Login: typeof import('./src/components/Login/index.vue')['default']

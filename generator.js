@@ -30,18 +30,18 @@ module.exports = (api, options, rootOptions) => {
   api.render('./template');
 
   // 自定义终端输出
-  api.onCreateComplete(() => {
-    const colors = {
-      green: '\x1B[32m', // 绿色
-      blue: '\x1B[34m',  // 蓝色
-      reset: '\x1B[0m'   // 重置颜色
-    };
+  // api.onCreateComplete(() => {
+  //   const colors = {
+  //     green: '\x1B[32m', // 绿色
+  //     blue: '\x1B[34m',  // 蓝色
+  //     reset: '\x1B[0m'   // 重置颜色
+  //   };
 
-    console.log(`\n${colors.green}🎉  思政模板项目创建成功！${colors.reset}`);
-    console.log(`${colors.blue}👉  启动项目请执行：${colors.reset}`);
-    console.log(`\n   ${colors.green}$ cd ${rootOptions.projectName}${colors.reset}`);
-    console.log(`   ${colors.green}$ yarn dev${colors.reset}  # 开发环境启动`);
+  //   console.log(`\n${colors.green}🎉  思政模板项目创建成功！${colors.reset}`);
+  //   console.log(`${colors.blue}👉  启动项目请执行：${colors.reset}`);
+  //   console.log(`\n   ${colors.green}$ cd ${rootOptions.projectName}${colors.reset}`);
+  //   console.log(`   ${colors.green}$ yarn dev${colors.reset}  # 开发环境启动`);
     
-    api.exitLog('', 'log');
-  });
+  //   api.exitLog('', 'log');
+  // });
 }

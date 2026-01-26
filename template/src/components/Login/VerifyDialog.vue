@@ -4,7 +4,10 @@ import { apiGetImgCaptcha } from "@/api/login";
 import type { FormInstance } from 'element-plus'
 import type { CaptchaInfo } from '@/types/login'
 
-const emit = defineEmits(['submit'])
+interface Emit {
+  (e: 'submit', captcha: string, verifyKey: string): void
+}
+const emit = defineEmits<Emit>()
 
 const verifyFormRef = ref<FormInstance | null>(null)
 

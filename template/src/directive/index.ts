@@ -1,53 +1,38 @@
-import { App } from 'vue'
+import { App, DirectiveBinding } from 'vue'
 
 export default function initDirective(app: App) {
-  const list: HTMLElement[] = []
-  let timer: any
-  window.addEventListener('scroll', () => {
-    run()
-  }, true);
-
-  const run = () => {
-    const tempList: HTMLElement[]  = []
-    let t = 50
-    list.forEach(el => {
-      // if (elementInViewport(el, true)) {
-      //   tempList.push(el)
-      // }
-    })
-    while(tempList.length > 0) {
-      const el = tempList.shift()
-      if (el) {
-        list.splice(list.indexOf(el), 1)
-        setTimeout(() => {
-          el.style.opacity = '1'
-          el.style.transform = 'translateY(0px)'
-        }, t += 20)
+  let delay = 50
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target as HTMLElement
+        animateElement(el)
+        observer.unobserve(el)
       }
-    }
+    })
+  })
+
+  const animateElement = (el: HTMLElement) => {
+    setTimeout(() => {
+      el.style.opacity = '1'
+      el.style.transform = 'translateY(0px)'
+    }, delay += 20)
   }
 
   app.directive('animate', {
-    mounted: (el) => {
+    mounted: (el: HTMLElement, binding: DirectiveBinding) => {
       el.style.transition = 'all 1.2s'
       el.style.opacity = '0'
       el.style.transform = 'translateY(40px)'
-      list.push(el)
-      if (timer) {
-        clearTimeout(timer)
+
+      observer.observe(el)
+      
+      if (!window.IntersectionObserver) {
+        animateElement(el)
       }
-      timer = setTimeout(() => {
-        run() // 执行动画
-      }, 150)
-      // setTimeout(() => {
-      //   run()
-      // }, 300)
     },
-    unmounted: (el) => {
-      // if (timer) {
-      //   clearTimeout(timer)
-      // }
-      // list.splice(list.indexOf(el), 1)
+    unmounted: (el: HTMLElement) => {
+      observer.unobserve(el)
     }
   })
 }
