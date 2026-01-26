@@ -15,6 +15,14 @@ import baseRoutes from './modules/base';
  *  @param noNeedLogin 是否不需要token校验
  */
 
+// 登录页路由
+const logingRoutes: Array<RouteRecordRaw> = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index.vue'),
+  },
+]
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -24,13 +32,9 @@ const routes: Array<RouteRecordRaw> = [
     ]
   }
 ]
-
 const constantRouter: Array<RouteRecordRaw> = [
+  ...(import.meta.env.VITE_IS_PORTAL === 'true' ? [] : logingRoutes),
   ...routes,
-  {
-    path: '/login',
-    component: () => import('@/views/login/index.vue'),
-  },
   {
     path: '/:pathMatch(.*)',
     redirect: '/',

@@ -21,5 +21,5 @@ interface ImportMetaEnv {
   readonly VITE_MOOCPEOPLE_HOST: string
   readonly VITE_UPLOAD_STRATEGY: 'standard' | 'local'
   readonly VITE_SHOW_FORGOT_PASSWORD: 'true' | 'false'
-  readonly VITE_IS_PORTAl: 'true' | 'false'
+  readonly VITE_IS_PORTAL: 'true' | 'false'
 }
