@@ -3,7 +3,7 @@ import mk from 'markdown-it-katex'
 import hljs from 'highlight.js'
 import 'highlight.js/scss/default.scss'
 
-export const mdi: any = new Markdownit({
+export const mdi: Markdownit = new Markdownit({
   html: true,
   linkify: true,
   typographer: true,
@@ -16,8 +16,8 @@ export const mdi: any = new Markdownit({
           hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
           '</code></pre>'
         )
-      } catch (err) {
-        console.log(err)
+      } catch {
+        // 高亮失败时保留经过转义的代码内容。
       }
     }
     return (

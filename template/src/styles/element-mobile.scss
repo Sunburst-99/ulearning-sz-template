@@ -1,0 +1,149 @@
+// 移动端复用 Vant 的设计变量；Element 的表单结构、校验和键盘交互仍由原组件管理。
+.mobile {
+
+  /* Button：default / large / small 对应 Vant normal / large / small。 */
+  .el-button:not(.is-link, .is-text, .el-button--text) {
+    min-width: 40px;
+    height: 40px;
+    border-radius: var(--van-button-radius);
+    font-size: var(--van-button-normal-font-size);
+    line-height: var(--van-button-default-line-height);
+
+    &.el-button--large {
+      height: 44px;
+      border-radius: 12px;
+      font-size: var(--van-button-default-font-size);
+      line-height: 28px;
+    }
+
+    &.el-button--small {
+      height: var(--van-button-small-height);
+      border-radius: 6px;
+      font-size: var(--van-button-small-font-size);
+      line-height: 22px;
+    }
+  }
+
+  /* Input / Textarea */
+  .el-input {
+    --el-input-height: 40px;
+    --el-input-inner-height: var(--van-cell-line-height);
+    --el-input-border-radius: 8px;
+    font-size: var(--van-cell-font-size);
+
+    .el-input__wrapper {
+      min-height: var(--el-input-height);
+    }
+  }
+
+  .el-textarea {
+    --el-input-border-radius: 8px;
+    font-size: var(--van-cell-font-size);
+  }
+
+  /* Select */
+  .el-select {
+    .el-select__wrapper {
+      min-height: 40px;
+      border-radius: 8px;
+      font-size: var(--van-cell-font-size);
+    }
+
+    .el-tag {
+      height: 28px;
+    }
+  }
+
+  /* Tag */
+  .el-tag:not(.is-round) {
+    --el-tag-border-radius: 6px;
+
+    &.el-tag--large {
+      --el-tag-border-radius: 8px;
+    }
+  }
+
+  /* Checkbox / Radio */
+  .el-checkbox {
+    --el-checkbox-font-size: 16px;
+    --el-checkbox-input-width: 16px;
+    --el-checkbox-input-height: 16px;
+  }
+
+  .el-radio {
+    --el-radio-font-size: 16px;
+    --el-radio-input-width: 16px;
+    --el-radio-input-height: 16px;
+  }
+
+  /* Dropdown */
+  .el-dropdown-menu .el-dropdown-menu__item {
+    font-size: 16px;
+    line-height: 24px;
+    padding: 10px 16px;
+  }
+
+  .el-dropdown-menu--small .el-dropdown-menu__item {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  /* Tabs */
+  .el-tabs {
+    --mobile-tabs-font-size: 16px;
+
+    &.el-tabs[size=large] {
+      --mobile-tabs-font-size: 18px;
+    }
+
+    .el-tabs__item {
+      font-size: var(--mobile-tabs-font-size);
+    }
+  }
+
+  /* Segmented */
+  .el-segmented {
+    --el-border-radius-base: 8px;
+    // --el-segmented-padding: 4px;
+    min-height: 40px;
+    font-size: 16px;
+  }
+
+  /* form */
+  .el-form {
+    .el-form-item__label {
+      height: 40px;
+      line-height: 40px;
+      margin: 0;
+      font-size: var(--van-cell-font-size);
+      font-weight: 600;
+    }
+  }
+
+  /* alert */
+  .el-alert {
+    --el-alert-title-font-size: 16px;
+    --el-alert-description-font-size: 14px;
+    --el-alert-icon-size: 16px;
+    --el-alert-icon-large-size: 28px;
+    --el-alert-border-radius-base: 8px;
+
+    .el-alert__title.with-description {
+      font-weight: 600;
+    }
+
+    .el-alert__icon.is-big {
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+  }
+
+  .el-drawer {
+    --el-drawer-padding-primary: 16px;
+  }
+
+  .el-popper.el-dropdown__popper {
+    border-radius: 10px !important;
+    overflow: hidden;
+  }
+}

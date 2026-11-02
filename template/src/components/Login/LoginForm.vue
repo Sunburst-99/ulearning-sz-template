@@ -13,6 +13,7 @@ interface FormInfo {
 const userStore = useUserStore()
 
 const formRef = ref<FormInstance>()
+const submitting = ref(false)
 
 const loginForm = reactive<FormInfo>({
   loginName: "",
@@ -24,22 +25,20 @@ const loginRules = reactive<FormRules<FormInfo>>({
 })
 
 // 登录
-const handleSubmit = () => {
-  formRef.value?.validate((valid) => {
-    if (valid) {
-      toSubmit();
-    }
-  });
-}
-
-const toSubmit = async () => {
+const handleSubmit = async () => {
+  if (submitting.value || !formRef.value) return
+  submitting.value = true
   try {
+    const valid = await formRef.value.validate().catch(() => false)
+    if (!valid) return
     const res = await apiLogin<UserInfo>(loginForm);
-    if (res) {
-      userStore.updateUserInfo(res)
-      window.location.reload()
-    }
-  } catch {}
+    userStore.updateUserInfo(res)
+    window.location.reload()
+  } catch {
+
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -48,15 +47,15 @@ const toSubmit = async () => {
     <span>账号登录</span>
   </div>
 
-  <el-form ref="formRef" :model="loginForm" :rules="loginRules">
+  <el-form ref="formRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleSubmit">
     <el-form-item prop="loginName">
       <el-input v-model="loginForm.loginName" placeholder="请输入用户名" />
     </el-form-item>
     <el-form-item prop="password">
       <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password />
     </el-form-item>
+    <el-button class="btn" type="primary" native-type="submit" :loading="submitting">登录</el-button>
   </el-form>
-  <el-button class="btn" type="primary" @click="handleSubmit">登录</el-button>
 </template>
 
 <style lang="scss" scoped>

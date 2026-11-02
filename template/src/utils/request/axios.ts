@@ -50,7 +50,7 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    // Do something with response error
+    if (axios.isCancel(error)) return Promise.reject(error);
     if (error && error.response) {
       switch (error.response.status) {
         case 401:
@@ -63,8 +63,12 @@ service.interceptors.response.use(
           ElMessage.error(error.response.data.message);
           break;
         default:
+          ElMessage.error('请求失败，请稍后重试');
           return Promise.reject(error.response);
       }
+    } else {
+      const isTimeout = error?.code === 'ECONNABORTED' || error?.code === 'ETIMEDOUT';
+      ElMessage.error(isTimeout ? '请求超时，请稍后重试' : '网络异常，请检查网络连接');
     }
     return Promise.reject(error);
   },

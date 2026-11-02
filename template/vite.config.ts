@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from "path"; 
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
+import { resolve } from "path";
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { terser } from "rollup-plugin-terser";
 import viteCompression from 'vite-plugin-compression'
 
 // https://vite.dev/config/
@@ -21,7 +20,8 @@ export default defineConfig({
     }),
     Components({
       // directoryAsNamespace: true,  // 是否允许相同文件名
-      resolvers: [ElementPlusResolver()],  //自动导入，按需加载
+      // 组件按需引入，样式由 main.ts 统一加载，确保主题覆盖顺序稳定。
+      resolvers: [ElementPlusResolver({ importStyle: false })],
     }),
     // gzip压缩
     viteCompression({
@@ -34,10 +34,6 @@ export default defineConfig({
   build: {
     minify: 'terser', // 使用 terser 进行压缩
     rollupOptions: {
-      plugins: [
-        // @ts-ignore
-        terser() // 打包压缩
-      ],
       // input: getInput(),
       output: {
         manualChunks: {
@@ -66,9 +62,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler', // or "modern", "legacy"
         additionalData: `@use "@/styles/mixin.scss" as *;`,
-        javascriptEnabled: true,
       },
     },
   },

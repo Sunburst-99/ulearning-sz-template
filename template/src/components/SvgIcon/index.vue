@@ -4,10 +4,11 @@
   </svg>
 </template>
 
-<script lang="ts" name="svg-icon">
+<script lang="ts">
 import { defineComponent, computed } from 'vue'
 
 export default defineComponent({
+  name: 'SvgIcon',
   props: {
     iconClass: {
       type: String,

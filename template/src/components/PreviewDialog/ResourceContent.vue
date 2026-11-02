@@ -1,42 +1,37 @@
 <template>
   <div class="resource-content">
     <!-- 视频 -->
-    <div class="video-block" v-if="resource?.fileType === FILE_TYPE_NAME.VIDEO">
-      <div class="video-wrapper">
-        <video
-          class="custom-video"
-          id="media"
-          controls
-          playsinline
-          webkit-playsinline
-          controlsList="nodownload"
-          :src="fileUrl"
-        ></video>
-      </div>
+    <div class="video-wrapper" v-if="resource?.fileType === FILE_TYPE_NAME.VIDEO">
+      <video
+        id="media"
+        controls
+        playsinline
+        webkit-playsinline
+        controlsList="nodownload"
+        :src="fileUrl"
+      />
     </div>
     <!-- 音频 -->
-    <div class="audio-block" v-if="resource?.fileType === FILE_TYPE_NAME.AUDIO">
-      <div class="audio-wrapper">
-        <audio
-          class="custom-audio"
-          :id="'media'"
-          :src="fileUrl"
-          controls
-        ></audio>
-      </div>
+    <div class="audio-wrapper" v-if="resource?.fileType === FILE_TYPE_NAME.AUDIO">
+      <audio
+        :id="'media'"
+        :src="fileUrl"
+        controls
+      />
     </div>
     <!-- 文档 -->
     <div class="document-block" v-if="resource?.fileType === FILE_TYPE_NAME.DOCUMENT">
-      <iframe :src="fileUrl"></iframe>
+      <iframe :src="fileUrl" :title="resource.name"></iframe>
     </div>
     <!-- 图片 -->
     <div class="image-block" v-if="resource?.fileType === FILE_TYPE_NAME.IMAGE">
       <div 
         class="image-wrapper"
-        @mousedown="handleMouseDown"
-        @mousemove="handleMouseMove"
-        @mouseup="handleMouseUp"
-        @mouseleave="handleMouseUp"
+        @pointerdown="handlePointerDown"
+        @pointermove="handlePointerMove"
+        @pointerup="handlePointerUp"
+        @pointercancel="handlePointerUp"
+        @lostpointercapture="handlePointerUp"
         @wheel="handleWheel"
       >
         <img
@@ -45,15 +40,16 @@
           :src="fileUrl"
           :alt="resource?.name"
           :style="imageStyle"
+          draggable="false"
         />
       </div>
       <div class="icons-block">
         <div class="icons">
-          <el-icon @click="left"><RefreshLeft /></el-icon>
-          <el-icon @click="right"><RefreshRight /></el-icon>
-          <el-icon @click="zoomIn"><CirclePlus /></el-icon>
-          <el-icon @click="zoomOut"><Remove /></el-icon>
-          <el-icon @click="resetImage"><Refresh /></el-icon>
+          <button type="button" class="image-tool" aria-label="向左旋转" @click="left"><el-icon><RefreshLeft /></el-icon></button>
+          <button type="button" class="image-tool" aria-label="向右旋转" @click="right"><el-icon><RefreshRight /></el-icon></button>
+          <button type="button" class="image-tool" aria-label="放大" @click="zoomIn"><el-icon><CirclePlus /></el-icon></button>
+          <button type="button" class="image-tool" aria-label="缩小" @click="zoomOut"><el-icon><Remove /></el-icon></button>
+          <button type="button" class="image-tool" aria-label="重置图片" @click="resetImage"><el-icon><Refresh /></el-icon></button>
         </div>
       </div>
     </div>
@@ -62,6 +58,7 @@
 
 <script setup lang="ts">
   import { ref, computed,watch } from 'vue'
+  import { RefreshLeft, RefreshRight, CirclePlus, Remove, Refresh } from '@element-plus/icons-vue'
   import { FILE_TYPE_NAME } from '@/ts/enums'
 
   interface Props {
@@ -104,7 +101,7 @@
 
   // 放大
   const zoomIn = () => {
-    zoom.value += 0.2;
+    zoom.value = Math.min(10, Number((zoom.value + 0.2).toFixed(1)));
   }
 
   // 缩小
@@ -121,11 +118,14 @@
     zoom.value = 1;
     x.value = 0;
     y.value = 0;
+    isDragging.value = false;
   }
 
-  // 处理鼠标按下
-  const handleMouseDown = (e: MouseEvent) => {
+  // Pointer 事件同时支持鼠标和手指拖动，捕获后移出图片也能正常结束拖动。
+  const handlePointerDown = (e: PointerEvent) => {
+    if (!e.isPrimary || e.button !== 0) return
     e.preventDefault();
+    if (e.currentTarget instanceof HTMLElement) e.currentTarget.setPointerCapture(e.pointerId)
     isDragging.value = true;
     startPos.value = {
       x: e.clientX - x.value,
@@ -133,8 +133,8 @@
     };
   }
 
-  // 处理鼠标移动
-  const handleMouseMove = (e: MouseEvent) => {
+  const handlePointerMove = (e: PointerEvent) => {
+    if (!e.isPrimary) return
     e.preventDefault(); // 阻止默认行为
     if (isDragging.value) {
       x.value = e.clientX - startPos.value.x;
@@ -142,8 +142,7 @@
     }
   }
 
-  // 处理鼠标松开
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     isDragging.value = false;
   }
 
@@ -156,7 +155,8 @@
     // 限制缩放范围
     if (newZoom >= 0.1 && newZoom <= 10) {
       // 计算鼠标位置相对于图片的中心点
-      const rect = e.currentTarget as HTMLElement;
+      const rect = e.currentTarget;
+      if (!(rect instanceof HTMLElement)) return
       const rectWidth = rect.clientWidth;
       const rectHeight = rect.clientHeight;
       const mouseX = e.clientX - rect.getBoundingClientRect().left;
@@ -167,24 +167,12 @@
       const mouseOffsetY = mouseY - rectHeight / 2;
       
       // 应用缩放
+      const ratio = newZoom / zoom.value
       zoom.value = newZoom;
       
       // 调整位置，使鼠标指向的位置保持不变
-      x.value += mouseOffsetX * (delta / zoom.value);
-      y.value += mouseOffsetY * (delta / zoom.value);
+      x.value = mouseOffsetX - (mouseOffsetX - x.value) * ratio;
+      y.value = mouseOffsetY - (mouseOffsetY - y.value) * ratio;
     }
   }
 </script>
-
-<style lang="scss" scoped>
-  @import url('./index.scss');
-  
-  .image-wrapper {
-    touch-action: none; // 防止触摸设备上的默认行为
-  }
-  
-  .img {
-    user-select: none; // 防止图片被选中
-    max-width: none; // 允许图片完全显示，不限制在容器宽度内
-  }
-</style>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="EllipsisTooltip">
   import { ref, computed, onMounted, nextTick } from 'vue' 
 
   interface Props {
@@ -35,7 +35,6 @@
       const scrollH = textRef.value.scrollHeight;
       showTooltip.value = scrollW > clientW || scrollH > clientH;
       const tagW = tagRef.value?.clientWidth || 0
-      console.log(tagRef)
       tagWidth.value = tagW + 'px'
     }
   } 

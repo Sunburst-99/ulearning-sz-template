@@ -10,7 +10,7 @@
           <el-icon class="icon"><Document /></el-icon>
           <span class="name ellipsis">{{ file.name }}</span>
           <el-icon class="scusess-icon" v-if="file.status === 'success'"><CircleCheck /></el-icon>
-          <el-icon class="close-icon" :class="{'my-disabled': disabled}" v-if="file.status === 'success'" @click="onRemove(file)">
+          <el-icon class="close-icon" :class="{'my-disabled': disabled}" v-if="file.status === 'success' || file.status === 'ready'" @click="onRemove(file)">
             <Close />
           </el-icon>
         </div>
@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts" setup>
+import { CircleCheck, Close, Document } from '@element-plus/icons-vue'
 
 interface Props {
   fileList: any

@@ -20,7 +20,13 @@ npm install
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Type-Check
+
+```sh
+npm run typecheck
+```
+
+### Compile and Minify for Production
 
 ```sh
 测试环境：npm run build:test

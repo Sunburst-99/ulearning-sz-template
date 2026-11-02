@@ -2,6 +2,7 @@ import Obs from "ulearning-obs/dist/obs-huawei.js";
 import axios from 'axios';
 import { useUserStore } from "@/store";
 import { dateFormat, download } from '@/utils/functions';
+import { ElMessage } from 'element-plus'
 
 const { VITE_COURSE_API, VITE_API_HOST } = import.meta.env
 
@@ -62,12 +63,20 @@ export default function() {
   }
 
   // 下载
-  const obsDownload = (url: string, name?: string) => {
-    if (import.meta.env.VITE_UPLOAD_STRATEGY === 'local') {
-      download(url, name)
-    } else {
-      const obs = obsUploader()
-      obs.download(url, name);
+  const obsDownload = async (url: string, name?: string) => {
+    try {
+      if (import.meta.env.VITE_UPLOAD_STRATEGY === 'local') {
+        await download(url, name)
+      } else {
+        const obs = obsUploader()
+        // SDK 通过回调上报异步错误，download 本身不返回 Promise。
+        obs.onError = (_file: unknown, error: { msg: string }) => {
+          ElMessage.error(error.msg)
+        }
+        obs.download(url, name);
+      }
+    } catch (error) {
+      ElMessage.error(error instanceof Error ? error.message : '下载失败，请稍后重试')
     }
   }
 

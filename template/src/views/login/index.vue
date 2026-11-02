@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup name="LoginPage">
   import Logo from '@/components/Logo/index.vue'
   import Login from '@/components/Login/index.vue'
 </script>

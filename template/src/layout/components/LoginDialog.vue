@@ -7,7 +7,7 @@
 <template>
   <el-dialog
     v-model="AppStore.loginDialog"
-    width="460"
+    width="min(460px, calc(100vw - 32px))"
     :close-on-click-modal="false"
     destroy-on-close
     show-close

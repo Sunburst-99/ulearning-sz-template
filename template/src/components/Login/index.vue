@@ -1,5 +1,6 @@
-<script setup lang="ts">
+<script setup lang="ts" name="AccountLogin">
   import { reactive, useTemplateRef } from 'vue'
+  import { ArrowLeft } from '@element-plus/icons-vue'
   import LoginForm from './LoginForm.vue'
   import ResetForm from './ResetForm.vue'
   import VerifyDialog from './VerifyDialog.vue'

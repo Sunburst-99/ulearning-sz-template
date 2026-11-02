@@ -7,8 +7,8 @@
       :multiple="multiple"
       action="#"
       :show-file-list="type === 'card'"
-      :fileList="fileList"
-      :limit="limit"
+      :fileList="uploadFileList"
+      :limit="multiple ? limit : 1"
       :accept="accept"
       :disabled="disabled"
       :auto-upload="autoUpload"
@@ -42,8 +42,8 @@
       <template #file="{ file }" v-if="type === 'card'">
         <!-- 上传中 -->
         <el-progress v-if="file.status === 'uploading'" type="circle" :percentage="file.percentage" />
-        <!-- 上传成功 -->
-        <template v-if="file.status === 'success'">
+        <!-- 待上传 / 上传成功 -->
+        <template v-if="file.status === 'success' || (!autoUpload && file.status === 'ready')">
           <img
             class="el-upload-list__item-thumbnail"
             :src="file.url"
@@ -82,10 +82,11 @@
     </el-dialog>
   </div>
 </template>
-<script lang="ts" setup>
-import { ref, watch, computed } from 'vue';
+<script lang="ts" setup name="MyUpload">
+import { ref, watch, computed, nextTick } from 'vue';
 import useUploadHooks from "@/hooks/useUploadHooks";
 import { ElMessage, genFileId } from 'element-plus';
+import { Delete, Plus, UploadFilled, ZoomIn } from '@element-plus/icons-vue';
 import type { UploadInstance, UploadProps, UploadRawFile } from 'element-plus';
 import FileList from './FileList.vue'
 
@@ -115,7 +116,7 @@ interface Props {
   showFileList?: boolean // 是否显示文件列表
   basePath?: string
   uptokenHost?: string
-  openPartUploadSize?: number // 超过某个size开启分段上传
+  openPartUploadSize?: number // 超过此大小开启分段上传，单位 MB
   needPartUpload?: boolean  // 是否开启分段上传
   disabled?: boolean
 }
@@ -141,9 +142,20 @@ const { obsUploader, formatUploadPath, uploadByLocal } = useUploadHooks()
 const uploadRef = ref<UploadInstance>()
 
 const fileList = ref<any[]>([])
+// 手动上传模式对外仍返回原始文件，内部补齐 Element Plus submit 所需的 raw 和状态。
+const uploadFileList = computed(() => {
+  if (props.autoUpload) return fileList.value
+  return fileList.value.map(file => {
+    const { name, uid, status, size, percentage, url } = file
+    return file instanceof File
+      ? { name, uid, status: status ?? 'ready', size, percentage, url, raw: file }
+      : file
+  })
+})
 const dialogVisible = ref(false)
 const dialogImageUrl = ref('')
-let obs: any
+// 每个文件保存自己的 SDK 实例，避免并发上传时取消到其他文件。
+const uploadClients = new Map<number, ReturnType<typeof obsUploader>>()
 
 const getFileList = () => {
   if (props.modelValue) {
@@ -179,7 +191,7 @@ const onBeforeUpload: UploadProps['beforeUpload'] = (file) => {
 }
 
 // 文件校验
-const checkFile = (file: UploadRawFile) => {
+const checkFile = (file: File) => {
   // 校检文件类型
   const accepts = props.accept ? props.accept.split(',').map(v => v.trim()) : []
   const suffix = file.name.substring(file.name.lastIndexOf(".")).toLowerCase()
@@ -218,33 +230,40 @@ const onChange: UploadProps['onChange'] = (file) => {
 
   // 手动上传时在change事件中校验文件
   if (file.status === 'ready') {
-    const isLegal = file.raw ? checkFile(file.raw) : false
+    if (!file.raw) return
+    const isLegal = checkFile(file.raw)
     if (!isLegal) {
       removeFile(file.raw);
       return false
     }
-    fileList.value.push(file.raw);
+    fileList.value.push(Object.assign(file.raw, { status: file.status, url: file.url }));
     getFile()
   }
 }
 
 // 文件数超出限制
-const onExceed: UploadProps['onExceed'] = (files) => {
-  // if (props.multiple) {
+const onExceed: UploadProps['onExceed'] = async (files) => {
+  if (props.multiple) {
     ElMessage.warning('已达到上传数量上限！');
-  // } else {
-  //   const file = files[0] as UploadRawFile
-  //   const isLegal = checkFile(file)
-  //   if (isLegal) {
-  //     fileList.value = []
-  //     uploadRef.value?.clearFiles()
-  //     file.uid = genFileId()
-  //     uploadRef.value!.handleStart(file)
-  //     if (props.autoUpload) {
-  //       uploadRef.value?.submit()
-  //     }
-  //   }
-  // }
+    return
+  }
+
+  const file = files[0]
+  if (!file || !checkFile(file)) return
+
+  for (const oldFile of fileList.value) {
+    uploadRef.value?.abort(oldFile)
+    if (oldFile.uploadId && oldFile.status === 'uploading') {
+      uploadClients.get(oldFile.uid)?.abortMultipartUpload(oldFile.key, oldFile.uploadId)
+    }
+  }
+  uploadClients.clear()
+  uploadRef.value?.clearFiles()
+  fileList.value = []
+  await nextTick()
+  const rawFile = Object.assign(file, { uid: genFileId() })
+  uploadRef.value?.handleStart(rawFile)
+  if (props.autoUpload) uploadRef.value?.submit()
 }
 
 // type === card时预览图片
@@ -260,12 +279,13 @@ const removeFile = (file: any) => {
   if (props.disabled) return
   // 分段上传的文件，上传中被删除则取消上传
   if (props.autoUpload && file.uploadId && file.status === "uploading") {
-    obs.abortMultipartUpload(file.key, file.uploadId);
+    uploadClients.get(file.uid)?.abortMultipartUpload(file.key, file.uploadId);
   }
 
   // 自动上传且beforeupload校验不通过的文件，不执行以下代码
   if (props.autoUpload && file.status === 'ready') return
 
+  uploadClients.delete(file.uid)
   fileList.value = fileList.value.filter(f => f.uid !== file.uid);
   getFile()
 }
@@ -291,22 +311,25 @@ const localUpload = (file: UploadRawFile) => {
 
 // obs上传
 const obsUpload = (file: UploadRawFile) => {
-  obs = obsUploader({
+  const obs = obsUploader({
     uptokenHost: props.uptokenHost ? props.uptokenHost : import.meta.env.VITE_COURSE_API
   });
-  if (props.needPartUpload && file.size > props.openPartUploadSize) {
-    obs.startPartUpload(file)
-  } else {
-    obs.startUpload(file);
-  }
+  uploadClients.set(file.uid, obs)
   obs.onSuccess = async () => {
+    uploadClients.delete(file.uid)
     onSuccess(file)
   };
   obs.onProgress = (file: UploadRawFile, percent: number) => {
     onProgress(file, percent)
   };
-  obs.onError = (file: UploadRawFile, error: any) => {
-    onFail(file, error?.err?.message)
+  obs.onError = (file: UploadRawFile, error: { msg: string }) => {
+    uploadClients.delete(file.uid)
+    onFail(file, error.msg)
+  }
+  if (props.needPartUpload && file.size > props.openPartUploadSize * 1024 ** 2) {
+    obs.startPartUpload(file)
+  } else {
+    obs.startUpload(file);
   }
 }
 

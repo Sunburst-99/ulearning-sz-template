@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue'
-import { apiSendResetSms, apiSendResetEmail, apiCheckCaptchaByPhone, apiCheckCaptchaByEmail, apiSaveResetInfo } from "@/api/login";
-import { validPhoneNumber, validPassword } from "@/utils/validator";
+import { reactive, ref, watch, onBeforeUnmount } from 'vue'
+import { apiSendResetSms, apiSendResetEmail, apiCheckCaptchaByPhone, apiCheckCaptchaByEmail, apiSaveResetInfo } from '@/api/login'
+import { validPhoneNumber, validPassword } from '@/utils/validator'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import type { ResetPasswordInfo } from '@/types/login'
@@ -14,167 +14,135 @@ interface ResetForm {
   captcha: string
 }
 
-interface Emit {
+const props = defineProps<{
+  imgCaptchaInfo: { captcha: string; verifyKey: string }
+}>()
+const emit = defineEmits<{
   (e: 'openDialog'): void
   (e: 'closeDialog'): void
-}
-const emit = defineEmits<Emit>()
-
-const resetFormRef = ref<FormInstance | null>(null)
-
-let countdownId: NodeJS.Timeout | undefined = undefined
-
-const validConfirmPassword = (rule: any, value: any, callback: any) => {
-  if (value !== resetForm.password) {
-    return callback(new Error("两次输入密码不一致!"));
-  }
-  callback();
-};
-
-const props = defineProps({
-  imgCaptchaInfo: {
-    type: Object,
-    default: () => {}
-  }
-})
+}>()
+const resetFormRef = ref<FormInstance>()
+const resetByPhone = ref(false)
+const hasSendSms = ref(false)
+const sending = ref(false)
+const submitting = ref(false)
+const countdown = ref(60)
+let countdownId: ReturnType<typeof setInterval> | undefined
+let active = true
 
 const resetForm = reactive<ResetForm>({
-  phone: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-  captcha: ""
+  phone: '', email: '', password: '', confirmPassword: '', captcha: '',
 })
+
+const validConfirmPassword = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+  callback(value !== resetForm.password ? new Error('两次输入密码不一致!') : undefined)
+}
+
 const resetRules = reactive<FormRules<ResetForm>>({
-  phone: [{ required: true, validator: validPhoneNumber, trigger: "blur" }],
+  phone: [{ required: true, validator: validPhoneNumber, trigger: 'blur' }],
   email: [
-    { required: true, message: "请输入邮箱", trigger: "blur" },
-    { type: "email", message: "请输入正确的邮箱地址", trigger: "blur" }
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
   ],
-  password: [{ required: true, validator: validPassword, trigger: "blur" }],
-  confirmPassword: [{ required: true, validator: validConfirmPassword, trigger: "blur" }],
-  captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+  password: [{ required: true, validator: validPassword, trigger: 'blur' }],
+  confirmPassword: [{ required: true, validator: validConfirmPassword, trigger: 'blur' }],
+  captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
 })
-const resetByPhone = ref(false) //通过手机号重置
-const hasSendSms = ref(false)  //是否发送了验证码
-const countdown = ref(60)  //验证码发送倒计时
 
-watch(
-  () => props.imgCaptchaInfo,
-  (newVal, oldVal) => {
-    if (newVal && newVal.captcha && (newVal.captcha !== oldVal.captcha)) {
-      handleCheckImgCaptcha();
-    }
+const stopCountdown = () => {
+  clearInterval(countdownId)
+  countdownId = undefined
+  hasSendSms.value = false
+  countdown.value = 60
+}
+const startCountdown = () => {
+  stopCountdown()
+  hasSendSms.value = true
+  countdownId = setInterval(() => {
+    countdown.value--
+    if (countdown.value <= 0) stopCountdown()
+  }, 1000)
+}
+onBeforeUnmount(() => {
+  active = false
+  stopCountdown()
+})
+
+watch(() => props.imgCaptchaInfo, (value, previous) => {
+  if (value.captcha && (value.captcha !== previous.captcha || value.verifyKey !== previous.verifyKey)) {
+    void handleCheckImgCaptcha()
   }
-)
+})
 
-// 通过手机号/邮箱重置密码
 const handleChangeResetType = () => {
-  resetByPhone.value = !resetByPhone.value;
-  resetFormRef.value?.clearValidate();
-  resetFormRef.value?.resetFields();
+  if (sending.value || submitting.value) return
+  stopCountdown()
+  resetByPhone.value = !resetByPhone.value
+  resetFormRef.value?.resetFields()
+  resetFormRef.value?.clearValidate()
 }
 
-// 获取验证码
-const handleGetImgCaptcha = () => {
-  resetFormRef.value?.validateField(
-    resetByPhone.value ? "phone" : "email",
-    (valid) => {
-      if (valid) {
-        emit("openDialog");
-      }
-    }
-  );
+const handleGetImgCaptcha = async () => {
+  if (hasSendSms.value || sending.value || !resetFormRef.value) return
+  const valid = await resetFormRef.value.validateField(resetByPhone.value ? 'phone' : 'email').catch(() => false)
+  if (valid) emit('openDialog')
 }
 
-// 根据图片验证码发送短信
 const handleCheckImgCaptcha = async () => {
+  if (sending.value || hasSendSms.value) return
+  sending.value = true
   const { captcha, verifyKey } = props.imgCaptchaInfo
   try {
-    let params: any = {
-      captcha,
-      verKey: verifyKey,
-    };
-    params = Object.assign(
-      params,
-      resetByPhone.value
-        ? { regionCode: "86", cellphone: resetForm.phone }
-        : { lang: "zh-CN", type: 1, mail: resetForm.email }
-    );
     const res = resetByPhone.value
-      ? await apiSendResetSms<ResetPasswordInfo>(params)
-      : await apiSendResetEmail<ResetPasswordInfo>(params);
-    if (res.status === 1) {
-      ElMessage.success("验证码已发送");
-      emit("closeDialog");
-      // 禁用获取验证码按钮
-      hasSendSms.value = true;
-      countdownId = setInterval(() => {
-        if (countdown.value > 0) {
-          countdown.value -= 1;
-        } else {
-          clearInterval(countdownId);
-          hasSendSms.value = false;
-          countdown.value = 60;
-        }
-      }, 1000);
-    } else {
-      emit("closeDialog");
-      ElMessage({ type: 'error', message: res.message });
+      ? await apiSendResetSms<ResetPasswordInfo>({ captcha, verKey: verifyKey, regionCode: '86', cellphone: resetForm.phone })
+      : await apiSendResetEmail<ResetPasswordInfo>({ captcha, verKey: verifyKey, lang: 'zh-CN', type: 1, mail: resetForm.email })
+    if (!active) return
+    emit('closeDialog')
+    if (res.status !== 1) {
+      ElMessage.error(res.message)
+      return
     }
-  } catch (err) {
-    console.error(err);
+    ElMessage.success('验证码已发送')
+    startCountdown()
+  } catch {
+    // 错误提示沿用请求拦截器，保留表单内容供重试。
+  } finally {
+    sending.value = false
   }
 }
 
-// 点击确定
-const handleSubmit = () => {
-  resetFormRef.value?.validate(async (valid) => {
-    if (valid) {
-      const res = resetByPhone.value ? await checkPhoneCaptcha() : await checkEmailCaptcha();
-      if (res.status === 1) {
-        handleReset();
-      } else {
-        ElMessage.error(res.message);
-      }
-    }
-  });
-}
-
-// 检查手机验证码
-const checkPhoneCaptcha = async () => {
-  const res = await apiCheckCaptchaByPhone({
-    areaCode: "86",
-    cellphone: resetForm.phone,
-    code: resetForm.captcha
-  });
-  return res
-}
-
-// 检查邮箱验证码
-const checkEmailCaptcha = async () => {
-  const res = await apiCheckCaptchaByEmail({
-    mail: resetForm.email,
-    code: resetForm.captcha
-  });
-  return res
-}
-
-// 重置密码
-const handleReset = async () => {
+const handleSubmit = async () => {
+  if (submitting.value || !resetFormRef.value) return
+  submitting.value = true
   try {
-    const { password, captcha, phone, email } = resetForm;
-    const params = {
-      password,
-      code: captcha,
-      type: resetByPhone.value ? 1 : 2,
-      loginName: resetByPhone.value ? phone : email
+    const valid = await resetFormRef.value.validate().catch(() => false)
+    if (!valid) return
+    const check = resetByPhone.value
+      ? await apiCheckCaptchaByPhone({ areaCode: '86', cellphone: resetForm.phone, code: resetForm.captcha })
+      : await apiCheckCaptchaByEmail({ mail: resetForm.email, code: resetForm.captcha })
+    if (!active) return
+    if (check.status !== 1) {
+      ElMessage.error(check.message)
+      return
     }
-    await apiSaveResetInfo<ResetPasswordInfo>(params);
-    ElMessage.success('修改成功！');
-    resetFormRef.value?.resetFields();
-  } catch (err) {
-    console.error(err);
+    const res = await apiSaveResetInfo<ResetPasswordInfo>({
+      password: resetForm.password,
+      code: resetForm.captcha,
+      type: resetByPhone.value ? 1 : 2,
+      loginName: resetByPhone.value ? resetForm.phone : resetForm.email,
+    })
+    if (!active) return
+    if (res.status !== 1) {
+      ElMessage.error(res.message)
+      return
+    }
+    ElMessage.success('修改成功！')
+    stopCountdown()
+    resetFormRef.value.resetFields()
+  } catch {
+
+  } finally {
+    submitting.value = false
   }
 }
 </script>
@@ -227,7 +195,8 @@ const handleReset = async () => {
           <el-button
             class="captchaButton"
             :class="hasSendSms && 'countdown'"
-            :disabled="hasSendSms"
+            :disabled="hasSendSms || submitting"
+            :loading="sending"
             @click="handleGetImgCaptcha"
             >
             {{ hasSendSms ? `重新获取(${countdown})` : "获取验证码" }}
@@ -235,10 +204,10 @@ const handleReset = async () => {
         </el-form-item>
       </el-form>
       <div class="footer">
-        <el-button class="confirmButton" type="primary" @click="handleSubmit">确定</el-button>
+        <el-button class="confirmButton" type="primary" :loading="submitting" @click="handleSubmit">确定</el-button>
       </div>
       <div class="footer">
-        <el-button class="change" type="primary" link @click="handleChangeResetType">
+        <el-button class="change" type="primary" :disabled="sending || submitting" link @click="handleChangeResetType">
           通过{{ resetByPhone ? "邮箱" : "手机号" }}重置密码
         </el-button>
       </div>

@@ -1,0 +1,624 @@
+// 依据 Vant 设计资料 1.3.0（2026-10-14），对照 vant@4.10.2。
+// 直接引用 Element Plus 主色，现有主题切换更新后 Vant 自动同步。
+html:root {
+  --van-primary-color: var(--el-color-primary);
+  --van-success-color: var(--el-color-success);
+  --van-danger-color: var(--el-color-danger);
+  --van-warning-color: var(--el-color-warning);
+  --van-text-color: var(--el-text-color-primary);
+  --van-text-color-2: var(--el-text-color-secondary);
+  --van-text-color-3: var(--el-text-color-placeholder);
+  --van-border-color: var(--el-border-color);
+  --van-background: var(--el-bg-color-page);
+  --van-background-2: var(--el-bg-color);
+
+  // Button：保留 normal / large / small / mini 用途尺寸，不引入全局小密度。
+  --van-button-normal-font-size: 16px;
+  --van-button-small-font-size: 14px;
+  --van-button-default-font-size: 18px;
+  --van-button-mini-font-size: 12px;
+  --van-button-default-line-height: 24px;
+  --van-button-normal-padding: 0 24px;
+  --van-button-small-padding: 0 16px;
+  --van-button-mini-padding: 0 12px;
+  --van-button-radius: 10px;
+  --van-button-default-border-color: var(--el-border-color-light);
+
+  // Cell / Field 及复用它们的 Collapse、SwipeCell、DropdownItem：单行自然高 50。
+  --van-cell-font-size: 16px;
+  --van-cell-line-height: 24px;
+  --van-cell-vertical-padding: 13px;
+  --van-cell-label-font-size: 14px;
+  --van-cell-label-line-height: 22px;
+  --van-cell-icon-size: 20px;
+  --van-cell-border-color: var(--el-border-color-light);
+  --van-cell-right-icon-color: var(--el-text-color-placeholder);
+
+  --van-cell-group-inset-radius: 10px;
+  --van-cell-group-title-font-size: 16px;
+  --van-cell-group-title-line-height: 24px;
+  --van-cell-group-title-padding: 16px;
+  --van-cell-group-inset-title-padding: 16px;
+
+  --van-field-error-message-font-size: 14px;
+  --van-field-text-area-min-height: 48px;
+  --van-field-input-disabled-text-color: var(--el-text-color-disabled);
+
+  --van-radio-border-color: var(--el-border-color);
+  --van-radio-disabled-label-color: var(--el-text-color-disabled);
+  --van-radio-disabled-background: var(--el-disabled-bg-color);
+  --van-radio-disabled-icon-color: var(--el-disabled-border-color);
+
+  --van-checkbox-border-color: var(--el-border-color-dark);
+  --van-checkbox-disabled-label-color: var(--el-text-color-placeholder);
+  --van-checkbox-disabled-background: var(--el-disabled-bg-color);
+  --van-checkbox-disabled-icon-color: var(--el-disabled-border-color);
+
+  // Picker / DatePicker / TimePicker / PickerGroup 共用工具栏。
+  // option-height、visible-option-num 必须通过 props 配置；CSS 改行高会破坏滚动定位。
+  // Picker、DatePicker 的设计选项高为 50；TimePicker 的组合实例仍为 44，可见项均为 5。
+  --van-picker-toolbar-height: 50px;
+  --van-picker-title-font-size: 18px;
+  --van-picker-title-line-height: 28px;
+  --van-picker-action-font-size: 16px;
+
+  --van-search-input-height: 40px;
+
+  --van-pagination-height: 44px;
+  --van-pagination-item-width: 44px;
+
+  --van-divider-content-padding: 12px;
+  --van-divider-line-height: 22px;
+
+  --van-nav-bar-height: 50px;
+  --van-nav-bar-title-font-size: 18px;
+  --van-nav-bar-arrow-size: 20px;
+
+  --van-tabbar-height: 56px;
+  --van-tabbar-item-icon-size: 24px;
+  --van-tabbar-item-line-height: 18px;
+
+  --van-tabs-line-height: 50px;
+  --van-tabs-card-height: 44px;
+  --van-tab-font-size: 16px;
+  --van-tab-line-height: 24px;
+  --van-tab-disabled-text-color: var(--el-text-color-disabled);
+
+  --van-dropdown-menu-height: 50px;
+  --van-dropdown-menu-title-font-size: 16px;
+  --van-dropdown-menu-title-line-height: 24px;
+  --van-dropdown-menu-title-disabled-text-color: var(--el-text-color-secondary);
+
+  --van-dialog-font-size: 18px;
+  --van-dialog-header-line-height: 28px;
+  --van-dialog-message-font-size: 16px;
+  --van-dialog-message-line-height: 24px;
+  --van-dialog-button-height: 44px;
+  --van-dialog-header-padding-top: 24px;
+  --van-dialog-round-button-height: 44px;
+
+  --van-action-sheet-item-line-height: 24px;
+  --van-action-sheet-close-icon-color: var(--el-text-color-placeholder);
+  --van-action-sheet-header-font-size: 18px;
+
+  --van-share-sheet-title-font-size: 18px;
+  --van-share-sheet-title-line-height: 28px;
+  --van-share-sheet-header-padding: 12px 16px;
+  --van-share-sheet-option-name-font-size: 14px;
+  --van-share-sheet-cancel-button-height: 50px;
+
+  --van-calendar-header-title-height: 50px;
+  --van-calendar-header-title-font-size: 18px;
+  --van-calendar-day-height: 62px;
+  --van-calendar-confirm-button-height: 44px;
+  // 月份标题在完整 Calendar 内仍为 14/20，不能使用独立设计子组件的 16/24 覆盖它。
+  --van-calendar-month-title-font-size: 14px;
+
+  --van-cascader-header-height: 50px;
+  --van-cascader-title-font-size: 18px;
+  --van-cascader-title-line-height: 28px;
+  --van-cascader-tabs-height: 50px;
+
+  --van-popover-action-height: 50px;
+  --van-popover-action-font-size: 16px;
+  --van-popover-action-line-height: 24px;
+  --van-popover-action-width: max-content;
+  --van-popover-light-action-disabled-text-color: var(--el-text-color-disabled);
+  --van-popover-dark-action-disabled-text-color: var(--el-text-color-disabled);
+
+  --van-sidebar-font-size: 16px;
+  --van-sidebar-line-height: 24px;
+  --van-sidebar-selected-border-width: 2px;
+  --van-sidebar-disabled-text-color: var(--el-text-color-disabled);
+
+  --van-tree-select-font-size: 16px;
+  --van-tree-select-item-height: 50px;
+
+  --van-step-horizontal-title-font-size: 16px;
+  --van-step-font-size: 16px;
+  --van-step-circle-size: 9px;
+  --van-step-circle-color: var(--el-text-color-placeholder);
+  --van-step-line-color: var(--el-fill-color-darker);
+  --van-step-icon-size: 16px;
+
+  --van-stepper-input-height: 32px;
+  --van-stepper-radius: 6px;
+  --van-stepper-input-line-height: 22px;
+
+  --van-badge-padding: 0 4px;
+
+  --van-circle-text-font-size: 16px;
+  --van-circle-text-line-height: 24px;
+
+  --van-progress-pivot-font-size: 12px;
+  --van-progress-pivot-line-height: 18px;
+  --van-progress-pivot-padding: 3px 5px;
+
+  --van-count-down-line-height: 22px;
+
+  --van-index-bar-index-font-size: 12px;
+  --van-index-bar-index-line-height: 18px;
+
+  --van-index-anchor-font-weight: 600;
+  --van-index-anchor-text-color: var(--el-text-color-secondary);
+  --van-index-anchor-background: var(--el-fill-color-light);
+
+  --van-notice-bar-line-height: 22px;
+  --van-notice-bar-padding: 10px 12px;
+  --van-notice-bar-background: var(--el-color-warning-light-9);
+  --van-notice-bar-text-color: var(--el-color-warning);
+
+  --van-notify-font-size: 16px;
+  --van-notify-line-height: 24px;
+  --van-notify-padding: 10px 16px;
+
+  --van-action-bar-height: 60px;
+  --van-action-bar-button-height: 44px;
+
+  --van-uploader-border-radius: 8px;
+
+  --van-toast-default-width: 120px;
+  --van-toast-default-min-height: 120px;
+
+  --van-password-input-font-size: 28px;
+
+  --van-number-keyboard-title-height: 42px;
+  --van-number-keyboard-background: var(--el-fill-color-light);
+  --van-number-keyboard-title-color: #909399;
+
+  --van-overlay-background: rgba(0, 0, 0, 0.5);
+
+  --van-image-preview-overlay-background: rgba(0, 0, 0, 0.7);
+  --van-image-preview-close-icon-size: 24px;
+
+  --van-swipe-indicator-active-background: #fff;
+  --van-swipe-indicator-inactive-background: #fff;
+
+  --van-text-ellipsis-line-height: 22px;
+  --van-text-ellipsis-action-color: var(--van-primary-color);
+
+  --van-slider-button-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 0 8px rgba(100, 101, 102, 0.12);
+
+  --van-back-top-background: var(--van-primary-color);
+}
+
+.van-button {
+  &.van-button--large {
+    --van-button-radius: 12px;
+    --van-button-default-line-height: 28px;
+    padding: 0 32px;
+  }
+
+  &.van-button--small {
+    --van-button-radius: 6px;
+    --van-button-default-line-height: 22px;
+  }
+
+  &.van-button--mini {
+    --van-button-radius: 6px;
+    --van-button-default-line-height: 18px;
+  }
+}
+
+@each $type in primary, success, warning, danger {
+  .van-button--plain.van-button--#{$type} {
+    --van-button-plain-background: var(--el-color-#{$type}-light-9);
+    border-color: var(--el-color-#{$type}-light-5);
+
+    &.van-button--disabled {
+      --van-button-plain-background: var(--el-color-#{$type}-light-8);
+    }
+  }
+}
+
+.van-field {
+  .van-field__error-message {
+    line-height: 22px;
+  }
+
+  // 复合控件在 50px 主行内居中，错误或多行内容按文档流自然增高。
+  .van-field__control :is(.van-radio, .van-checkbox) {
+    min-height: 24px;
+  }
+
+  &:has(.van-switch) {
+    --van-field-label-margin-right: 4px;
+
+    .van-switch {
+      --van-switch-size: 20px;
+      --van-switch-width: 50px;
+      --van-switch-height: 24px;
+    }
+  }
+
+  &:has(.van-stepper) {
+    --van-cell-vertical-padding: 11px;
+    --van-stepper-input-font-size: 16px;
+    --van-stepper-input-line-height: 24px;
+  }
+}
+
+// 选择行扩大点击区域；没有文案的卡片选择图标保持原图标大小。
+:is(.van-radio, .van-checkbox):has(> :is(.van-radio__label, .van-checkbox__label)) {
+  min-height: 50px;
+}
+.van-radio .van-radio__label,
+.van-checkbox .van-checkbox__label {
+  font-size: 16px;
+  line-height: 24px;
+}
+.van-radio .van-radio__icon--square .van-icon,
+.van-checkbox .van-checkbox__icon .van-icon {
+  border-radius: 6px;
+}
+.van-checkbox__icon--disabled.van-checkbox__icon--checked .van-icon,
+.van-radio__icon--disabled.van-radio__icon--checked .van-icon {
+  color: var(--el-text-color-disabled);
+}
+
+// Checkbox 默认形状、Cell 控件类型/位置属于 props；这里延续项目已有的方形视觉。
+.van-search {
+  .van-search__content:not(.van-search__content--round) {
+    border-radius: 8px;
+  }
+
+  .van-field__left-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+  }
+  .van-field__right-icon {
+    display: flex;
+    align-items: center;
+    padding: 0 4px 0 8px;
+  }
+
+  &.van-search[border] .van-search__content {
+    border: 1px solid var(--el-border-color);
+    background: var(--el-fill-color-blank);
+  }
+}
+
+.van-tabs {
+  .van-tabs__line {
+    border-radius: 0;
+  }
+
+  .van-tabs__nav.van-tabs__nav--card {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
+.van-pagination {
+  .van-pagination__items {
+    flex-wrap: wrap;
+  }
+
+  .van-pagination__item {
+    min-height: var(--van-pagination-height);
+    height: auto;
+  }
+
+  .van-pagination__item button {
+    min-height: var(--van-pagination-height);
+    line-height: 22px;
+  }
+
+  :is(.van-pagination__item--prev, .van-pagination__item--next) {
+    min-width: 72px;
+    padding: 0;
+    border-radius: 10px;
+
+    &::after {
+      border-radius: 20px;
+    }
+
+    button {
+      padding: 0 24px;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .van-pagination__item--prev button {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .van-pagination__item--next button {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}
+
+// Vant 的 hairline 默认将 1px 线缩放为 0.5px；保留 hairline=false 的 1px 选项。
+.van-divider:not(.van-divider--hairline) {
+  --van-divider-border-color: var(--el-border-color-light);
+}
+
+.van-nav-bar {
+  .van-nav-bar__title {
+    line-height: 28px;
+  }
+
+  :is(.van-nav-bar__left, .van-nav-bar__right) {
+    font-size: 16px;
+  }
+}
+
+.van-dropdown-menu {
+  .van-dropdown-menu__item {
+    min-width: 0;
+  }
+
+  .van-dropdown-menu__title {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+.van-dialog {
+  // 311 是样本宽度，实际保留官方可配置宽度并约束窄屏留白。
+  max-width: calc(100vw - 32px);
+}
+
+.van-action-sheet {
+  .van-action-sheet__item {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+
+  .van-action-sheet__cancel {
+    min-height: 50px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    line-height: 24px;
+  }
+}
+
+// round 默认值需要组件侧调整；不清零全局 popup 圆角，以免破坏显式圆角弹层。
+.van-share-sheet {
+  .van-share-sheet__title {
+    margin-top: 0;
+    font-weight: 600;
+  }
+
+  .van-share-sheet__name {
+    line-height: 22px;
+  }
+}
+
+.van-calendar .van-calendar__month-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 20px;
+}
+
+.van-cascader .van-cascader__option {
+  padding-top: 13px;
+  padding-bottom: 13px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.van-popover {
+  --van-popover-action-border-color: #EBEEF5;
+
+  &.van-popover--dark {
+    --van-popover-action-border-color: #475467;
+  }
+  .van-popover__content:not(.van-popover__content--horizontal) {
+    .van-popover__action {
+      position: relative;
+
+      &:not(:last-child)::after {
+        content: '';
+        pointer-events: none;
+        position: absolute;
+        bottom: 0;
+        left: 16px;
+        width: calc(100% - 32px);
+        border-bottom: 1px solid var(--van-popover-action-border-color)
+      }
+
+      .van-popover__action-text {
+        overflow-wrap: anywhere;
+
+        &.van-hairline--bottom:after {
+          content: none;
+        }
+      }
+
+    }
+  }
+}
+
+// Sidebar 的 100px 是组合样本宽度，保留官方 --van-sidebar-width 供实际容器配置。
+// 横向步骤的设计为轨道在上、标题在下：16px 轨道 + 8px 间距 + 24px 标题。
+.van-steps.van-steps--horizontal {
+  padding-bottom: 10px;
+
+  .van-steps__items {
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  .van-step.van-step--horizontal {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    padding-top: 24px;
+    line-height: 24px;
+
+    .van-step__title {
+      display: block;
+      margin-left: 0;
+      text-align: center;
+      overflow-wrap: anywhere;
+      transform: none;
+    }
+
+    .van-step__circle-container {
+      top: 8px;
+      right: auto;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .van-step__line {
+      top: 8px;
+      left: 50%;
+    }
+  }
+}
+
+.van-steps {
+  .van-step--vertical {
+    line-height: 22px;
+
+    .van-step__title {
+      font-size: 16px;
+      line-height: 24px;
+
+      // Vant 通过默认插槽承载内容；标题/描述沿用 h3 + p 的常见结构。
+      > h3 {
+        font: inherit;
+      }
+
+      > p {
+        font-size: 14px;
+        line-height: 22px;
+      }
+    }
+
+    .van-step__circle-container {
+      top: 22px;
+    }
+
+    // 连接线从圆点中心延伸，避免增大圆点后首项上方露线。
+    .van-step__line {
+      top: 22px;
+    }
+  }
+}
+
+.van-badge:not(.van-badge--dot) {
+  line-height: 18px;
+}
+
+// IndexBar、Grid、Loading 的组合实例优先于独立设计子组件的尺寸。
+.van-index-bar {
+  --van-index-anchor-font-size: 16px;
+}
+
+.van-notice-bar,
+.van-notify {
+  border-radius: 8px;
+}
+
+.van-action-bar {
+  .van-action-bar-icon {
+    line-height: 14px;
+  }
+
+  .van-action-bar-button {
+    font-size: var(--van-button-normal-font-size);
+    line-height: 24px;
+  }
+}
+
+.van-grid-item .van-grid-item__text {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.van-grid .van-grid-item .van-grid-item__text {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.van-loading:has(.van-loading__text) {
+  --van-loading-spinner-size: 24px;
+}
+
+.van-loading .van-loading__text {
+  line-height: 22px;
+}
+
+.van-password-input {
+  .van-password-input__security li {
+    line-height: 44px;
+  }
+
+  :is(.van-password-input__info, .van-password-input__error-info) {
+    line-height: 22px;
+  }
+}
+
+.van-number-keyboard .van-number-keyboard__title-left {
+  color: #909399;
+}
+
+.van-image-preview {
+  :is(.van-image-preview__close-icon--top-left, .van-image-preview__close-icon--bottom-left) {
+    left: 20px;
+  }
+
+  :is(.van-image-preview__close-icon--top-right, .van-image-preview__close-icon--bottom-right) {
+    right: 20px;
+  }
+}
+
+.van-text-ellipsis {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.van-back-top {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.16);
+}
+
+.van-swipe-cell {
+  :is(.van-swipe-cell__left, .van-swipe-cell__right) .van-button {
+    height: 100%;
+  }
+}
+
+.van-dropdown-menu {
+  --van-dropdown-arrow-color: var(--van-dropdown-menu-title-text-color);
+
+  .van-dropdown-menu__item:not(.van-dropdown-menu__item--disabled) {
+    .van-dropdown-menu__title:not(.van-dropdown-menu__title--active)::after {
+      border-color: transparent transparent var(--van-dropdown-arrow-color) var(--van-dropdown-arrow-color);
+    }
+  }
+}
+
+.van-uploader__preview {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+// 设计新增的按钮组、复合 Field、倒计时数字块及 Swipe 页码需要对应 DOM/插槽；
+// Form 的字段数量、系统安全区和 Layout 设计占位也不在全局样式中生成。

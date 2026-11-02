@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["DOM", "ESNext"],
@@ -8,9 +7,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "noUnusedLocals": true,
+    "noUncheckedSideEffectImports": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

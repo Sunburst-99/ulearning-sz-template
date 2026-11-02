@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="SiteLogo">
   import { computed } from 'vue'
   import logo from "@images/logo.png";
 

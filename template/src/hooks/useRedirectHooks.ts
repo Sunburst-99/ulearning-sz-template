@@ -57,8 +57,8 @@ export default function() {
     const szmyPath = path ? `${singlePath}${path}` : singlePath
     return redirectUrl(REDIRECT_KEY.SZMY_AI, szmyPath)
   }
-  function toSzmyAI(path?: string) {
-    window.open(SzmyAIUrl(path), "_blank")
+  function toSzmyAI(path?: string, single?: true) {
+    window.open(SzmyAIUrl(path, single), "_blank")
   }
 
   // 优学院智能体

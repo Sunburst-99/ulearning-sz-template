@@ -1,4 +1,5 @@
 import { get, post } from '@/utils/request'
+import type { ResetPasswordInfo } from '@/types/login'
 
 const SZACCOUNT_API = import.meta.env.VITE_SZACCOUNT_API
 const COURSE_API = import.meta.env.VITE_COURSE_API
@@ -69,7 +70,7 @@ export const apiCheckCaptchaByPhone = (
     code: string
   }
 ) => {
-  return post({
+  return post<ResetPasswordInfo>({
     url: COURSE_API + `/findpassword/verifycode`,
     data
   });
@@ -82,7 +83,7 @@ export const apiCheckCaptchaByEmail = (
     code: string
   }
 ) => {
-  return post({
+  return post<ResetPasswordInfo>({
     url: COURSE_API + `/findpassword/verifymailcode`,
     data
   });

@@ -72,8 +72,7 @@ const hexToRgba = (hex: string, opacity: number) => {
  */
 export function changeElementPlusTheme (color: string) {
   if (!color) {
-    console.warn('未获取到颜色的值')
-    return
+    throw new Error('未获取到主题颜色')
   }
   // 设置主要颜色变量 --el-color-primary
   setRootProperty(PRE, color)
@@ -103,5 +102,9 @@ export function changeThemeColor(color: string) {
  * @param {*} style
  */
 export function changeLayoutStyle(style: string) {
-  setHtmlClass(`${style}-layout`)
+  const html = document.documentElement
+  for (const className of Array.from(html.classList)) {
+    if (className.endsWith('-layout')) html.classList.remove(className)
+  }
+  html.classList.add(`${style}-layout`)
 }

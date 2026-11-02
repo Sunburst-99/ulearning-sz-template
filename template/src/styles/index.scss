@@ -1,7 +1,10 @@
 @import url('./common.scss');
 @import url('./transition.scss');
 @import url('./markdown.scss');
-@import url('./variable.scss');
+@import url('./layout.scss');
+@import url('./element-variables.scss');
+@import url('./element-dark.scss');
+@import url('./element-mobile.scss');
 
 body {
   width: 100%;

@@ -12,6 +12,7 @@ const emit = defineEmits<Emit>()
 const verifyFormRef = ref<FormInstance | null>(null)
 
 const visible = ref(false)
+const loading = ref(false)
 
 const state = reactive({
   verifyForm: {
@@ -39,6 +40,10 @@ const close = () => {
 }
 
 const getCaptcha = async () => {
+  if (loading.value) return
+  loading.value = true
+  state.verifyImg = ''
+  state.verifyKey = ''
   // 获取新验证码之前清空之前的验证码
   if (state.verifyForm.captcha) {
     state.verifyForm.captcha = "";
@@ -47,12 +52,15 @@ const getCaptcha = async () => {
     const res = await apiGetImgCaptcha<CaptchaInfo>();
     state.verifyImg = res.image;
     state.verifyKey = res.verKey;
-  } catch (err) {
-    console.error(err);
+  } catch {
+
+  } finally {
+    loading.value = false
   }
 }
 
 const handleSubmit = () => {
+  if (loading.value || !state.verifyKey) return
   verifyFormRef.value?.validate((valid) => {
     if (valid) {
       emit('submit', state.verifyForm.captcha, state.verifyKey)
@@ -76,8 +84,8 @@ defineExpose({ open, close })
     :before-close="close"
   >
     <div class="verifyBox">
-      <img :src="verifyImg" />
-      <el-button link @click="getCaptcha">换一张</el-button>
+      <img v-if="verifyImg" :src="verifyImg" alt="图片验证码" />
+      <el-button link :loading="loading" @click="getCaptcha">换一张</el-button>
     </div>
     <el-form
       ref="verifyFormRef"
@@ -89,7 +97,7 @@ defineExpose({ open, close })
         <el-input v-model="verifyForm.captcha" placeholder="请输入验证码" />
       </el-form-item>
     </el-form>
-    <el-button type="primary" class="confirmButton" @click="handleSubmit">确定</el-button>
+    <el-button type="primary" class="confirmButton" :disabled="loading || !verifyImg" @click="handleSubmit">确定</el-button>
   </el-dialog>
 </template>
 

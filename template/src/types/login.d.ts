@@ -1,4 +1,4 @@
-import type { UserInfo } from '@/typings/user.d'
+import type { UserInfo } from '@/types/user'
 import { MENU_STYLE, THEME_COLOR } from '@/ts/enums'
 
 export interface CaptchaInfo {

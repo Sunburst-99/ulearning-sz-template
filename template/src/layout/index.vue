@@ -1,14 +1,13 @@
-<script lang="ts" setup>
+<script lang="ts" setup name="SiteLayout">
   import Header from './components/Header.vue'
   import Footer from './components/Footer.vue'
   import LoginDialog from './components/LoginDialog.vue'
 
-  const headerHeight = '48px'
 </script>
 
 <template>
-  <div class="layout" :style="{'--headerHeight': headerHeight}">
-    <Header :height="headerHeight" />
+  <div class="layout">
+    <Header />
     <main>
       <router-view v-slot="{Component, route}">
         <Transition name="scale-transform" appear mode="out-in">
@@ -25,12 +24,16 @@
 
 <style lang="scss" scoped>
   .layout {
-    width: 100vw;
-    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
     main {
       position: relative;
-      width: 100vw;
-      height: calc(100dvh - v-bind('headerHeight'));
+      flex: 1;
+      min-height: 0;
+      width: 100%;
       overflow-x: hidden;
       overflow-y: auto;
     }

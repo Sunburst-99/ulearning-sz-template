@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
 
+// SVG 注册模块由 Vite 插件生成，仅供副作用导入。
+declare module 'virtual:svg-icons-register' {}
+
 declare module 'ulearning-obs/dist/obs-huawei.js'
 declare module 'markdown-it-katex'
 

@@ -1,7 +1,7 @@
 module.exports = (api, options, rootOptions) => {
   api.render(files => {
     // 删除内置的组件文件
-    delete files['assets/logo.png'];
+    delete files['src/assets/logo.png'];
     delete files['src/components/HelloWorld.vue'];
     delete files['src/main.js'];
     delete files['src/views/HomeView.vue'];
@@ -21,9 +21,10 @@ module.exports = (api, options, rootOptions) => {
     },
     scripts: {
       ...templatePkg.scripts
-    }
+    },
+    engines: templatePkg.engines
   }, {
-    merge: false // 不合并任何内置配置
+    merge: false // 替换脚本配置；依赖仍按 Vue CLI 的规则合并
   })
 
   // 3. 渲染模板文件
